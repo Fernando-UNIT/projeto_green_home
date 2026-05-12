@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'perfil.dart';
 
 void main() {
   runApp(const MyApp());
@@ -116,6 +117,31 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: _incrementCounter,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 0,
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: const Color.fromARGB(235, 255, 255, 255),
+        selectedItemColor: const Color(0xFF34A853),
+        unselectedItemColor: const Color.fromARGB(136, 80, 80, 80),
+        items: const [
+        BottomNavigationBarItem(icon: Icon(Icons.home),label: 'Início',),
+        BottomNavigationBarItem(icon: Icon(Icons.check_circle_outline),label: 'Práticas',),
+        BottomNavigationBarItem(icon: Icon(Icons.gps_fixed),label: 'Metas',),
+        BottomNavigationBarItem(icon: Icon(Icons.lightbulb_outline),label: 'Dicas',),
+        BottomNavigationBarItem(icon: Icon(Icons.person),label: 'Perfil',),
+        ],
+        onTap: (index) {
+        if (index == 4) {
+            Navigator.push(
+            context,
+            MaterialPageRoute(builder: (c) => const Perfil(),),
+            );
+            }
+        if (index == 0) {
+        Navigator.pop(context);
+        }
+        },
       ),
     );
   }
