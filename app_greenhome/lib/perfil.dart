@@ -48,7 +48,6 @@ class _PerfilState extends State<Perfil> {
                   color: Colors.white,
                 ),
               ),
-              const SizedBox(height: 50),
             ],
           ),
         ),
