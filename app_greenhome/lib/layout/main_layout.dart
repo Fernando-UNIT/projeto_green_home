@@ -9,70 +9,124 @@ class MainLayout extends StatefulWidget {
 }
 
 class _MainLayoutState extends State<MainLayout> {
-
   int paginaAtual = 0;
+  bool mostrandoPerfil = false;
 
   final List<Widget> paginas = [
-
     const Center(
       child: Text('Início'),
     ),
-
     const Center(
       child: Text('Práticas'),
     ),
-
     const Center(
       child: Text('Metas'),
     ),
-
     const Center(
       child: Text('Dicas'),
     ),
+  ];
 
-    const Perfil(),
+  final List<String> titulos = [
+    'Olá',
+    'Práticas',
+    'Metas',
+    'Dicas',
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:const Color.fromARGB(235, 255, 255, 255),
+      backgroundColor: const Color.fromARGB(235, 255, 255, 255),
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: const Color(0xFF34A853),
         elevation: 0,
-        title: const Text(
-          'GreenHome',
-          style: TextStyle(
+        title: Text(
+          mostrandoPerfil ? 'Perfil' : titulos[paginaAtual],
+          style: const TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: Center(
+              child: mostrandoPerfil
+                  ? Material(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      clipBehavior: Clip.antiAlias,
+                      child: InkWell(
+                        hoverColor: Colors.grey.shade200,
+                        onTap: () {},
+                        child: const SizedBox(
+                          width: 42,
+                          height: 42,
+                          child: Icon(
+                            Icons.person,
+                            color: Color(0xFF2A914D),
+                            size: 32,
+                          ),
+                        ),
+                      ),
+                    )
+                  : Material(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(21),
+                      clipBehavior: Clip.antiAlias,
+                      child: InkWell(
+                        hoverColor: Colors.white.withValues(alpha: 0.2),
+                        onTap: () {
+                          setState(() {
+                            mostrandoPerfil = true;
+                          });
+                        },
+                        child: const Icon(
+                          Icons.account_circle,
+                          size: 42,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+            ),
+          ),
+        ],
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              stops: [0.0, 1.0],
+              colors: [
+                Color(0xFF46C971),
+                Color(0xFF2A914D),
+              ],
+            ),
+          ),
+        ),
       ),
-
-      body: paginas[paginaAtual],
-
+      body: mostrandoPerfil ? const Perfil() : paginas[paginaAtual],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: paginaAtual,
         type: BottomNavigationBarType.fixed,
-        backgroundColor:const Color.fromARGB(235, 255, 255, 255),
-        selectedItemColor:const Color(0xFF34A853),
-        unselectedItemColor:
-            const Color.fromARGB(136, 80, 80, 80),
+        backgroundColor: const Color.fromARGB(235, 255, 255, 255),
+        selectedItemColor: mostrandoPerfil
+            ? const Color.fromARGB(136, 80, 80, 80)
+            : const Color(0xFF34A853),
+        unselectedItemColor: const Color.fromARGB(136, 80, 80, 80),
         onTap: (index) {
-
           setState(() {
-
             paginaAtual = index;
+            mostrandoPerfil = false;
           });
         },
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home),label: 'Início',),
-          BottomNavigationBarItem(icon: Icon(Icons.check_circle_outline),label: 'Práticas',),
-          BottomNavigationBarItem(icon: Icon(Icons.gps_fixed),label: 'Metas',),
+          BottomNavigationBarItem(icon: Icon(Icons.home_outlined),label: 'Início',),
+          BottomNavigationBarItem(icon: Icon(Icons.fact_check_outlined),label: 'Práticas',),
+          BottomNavigationBarItem(icon: Icon(Icons.track_changes),label: 'Metas',),
           BottomNavigationBarItem(icon: Icon(Icons.lightbulb_outline),label: 'Dicas',),
-          BottomNavigationBarItem(icon: Icon(Icons.person),label: 'Perfil',),
         ],
       ),
     );
