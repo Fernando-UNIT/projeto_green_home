@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'perfil.dart';
+import '../pages/perfil/perfil_page.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
