@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../pages/perfil/perfil_page.dart';
+import '../pages/dicas/dicas_page.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
@@ -22,9 +23,7 @@ class _MainLayoutState extends State<MainLayout> {
     const Center(
       child: Text('Metas'),
     ),
-    const Center(
-      child: Text('Dicas'),
-    ),
+    const DicasPage(),
   ];
 
   final List<String> titulos = [
