@@ -1,13 +1,34 @@
 import 'package:flutter/material.dart';
-class DicasPage extends StatelessWidget {
+
+import '../../models/dica.dart';
+import '../../services/dicas_service.dart';
+import '../../widgets/dica_card.dart';
+
+class DicasPage extends StatefulWidget {
   const DicasPage({super.key});
+
+  @override
+  State<DicasPage> createState() => _DicasPageState();
+}
+class _DicasPageState extends State<DicasPage> {
+  bool mostrarSomenteFavoritos = false;
+
+  final List<Dica> dicas = DicasService.getDicas();
+
+  int get totalFavoritos =>
+      dicas.where((d) => d.favorito).length;
+
+  List<Dica> get dicasExibidas =>
+      mostrarSomenteFavoritos
+          ? dicas.where((d) => d.favorito).toList()
+          : dicas;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         const Padding(
-          padding: EdgeInsets.symmetric(vertical: 20.0),
+          padding: EdgeInsets.symmetric(vertical: 20),
           child: Text(
             'Dicas',
             style: TextStyle(
@@ -16,105 +37,66 @@ class DicasPage extends StatelessWidget {
             ),
           ),
         ),
-        Expanded(
-          child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            children: const [
-              DicaCard(
-                icon: Icons.water_drop_outlined,
-                iconColor: Color(0XFF0088FF),
-                iconBgColor: Color(0xFFD0E9FF),
-                text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed mi lorem, condimentum tristique suscipit vel, commodo quis lorem.',
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Row(
+            children: [
+              FilterChip(
+                label: const Text('Todas'),
+                selected: !mostrarSomenteFavoritos,
+                onSelected: (_) {
+                  setState(() {
+                    mostrarSomenteFavoritos = false;
+                  });
+                },
               ),
-              SizedBox(height: 16),
-              DicaCard(
-                icon: Icons.lightbulb_outline,
-                iconColor: Color(0XFFFFCC00),
-                iconBgColor: Color(0xFFFFF4C8),
-                text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed mi lorem, condimentum tristique suscipit vel, commodo quis lorem.',
+              const SizedBox(width: 8),
+              FilterChip(
+                label: Text(
+                  'Favoritas ($totalFavoritos)',
+                ),
+                selected: mostrarSomenteFavoritos,
+                onSelected: (_) {
+                  setState(() {
+                    mostrarSomenteFavoritos = true;
+                  });
+                },
               ),
-              SizedBox(height: 16),
-              DicaCard(
-                icon: Icons.recycling,
-                iconColor: Color(0xFF15B800),
-                iconBgColor: Color(0xFFDBFDD6),
-                text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed mi lorem, condimentum tristique suscipit vel, commodo quis lorem.',
-              ),
-              SizedBox(height: 32), 
             ],
           ),
         ),
-      ],
-    );
-  }
-}
-//Widget para o cartão de dica
-class DicaCard extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final Color iconBgColor;
-  final String text;
+        
+        const SizedBox(height: 12),
 
-  const DicaCard({
-    super.key,
-    required this.icon,
-    required this.iconColor,
-    required this.iconBgColor,
-    required this.text,
-  });
+        Expanded(
+          child: dicasExibidas.isEmpty
+              ? const Center(
+                  child: Text(
+                    'Nenhuma dica favoritada ainda.',
+                  ),
+                )
+              : ListView.separated(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24),
+                  itemCount: dicasExibidas.length,
+                  separatorBuilder: (_, _) =>
+                      const SizedBox(height: 16),
+                  itemBuilder: (_, index) {
+                    final dica = dicasExibidas[index];
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20), 
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x40000000),
-            offset: Offset(2, 4),    
-            blurRadius: 4,           
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.all(12), 
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center, 
-        children: [
-          Container(
-            width: 90,
-            height: 90,
-            decoration: BoxDecoration(
-              color: iconBgColor,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Icon(
-              icon,
-              color: iconColor,
-              size: 48, 
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF3F3F3), 
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Text(
-                text,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600, 
-                  color: Color(0xFF666666), 
-                  height: 1.4,
+                    return DicaCard(
+                      dica: dica,
+                      onFavoritoPressed: () {
+                        setState(() {
+                          dica.favorito =
+                              !dica.favorito;
+                        });
+                      },
+                    );
+                  },
                 ),
-              ),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
