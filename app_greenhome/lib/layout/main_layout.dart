@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import '../pages/perfil/perfil_page.dart';
 import '../pages/dicas/dicas_page.dart';
+import '../pages/perfil/alterar_senha_page.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
+
 
   @override
   State<MainLayout> createState() => _MainLayoutState();
@@ -12,7 +14,28 @@ class MainLayout extends StatefulWidget {
 class _MainLayoutState extends State<MainLayout> {
   int paginaAtual = 0;
   bool mostrandoPerfil = false;
+  bool mostrandoAlterarSenha = false;
 
+  void abrirAlterarSenha() {
+
+    setState(() {
+
+      mostrandoPerfil = true;
+      mostrandoAlterarSenha = true;
+
+    });
+  }
+
+  void voltarParaPerfil() {
+
+  setState(() {
+
+    mostrandoAlterarSenha = false;
+    mostrandoPerfil = true;
+
+  });
+}
+  
   final List<Widget> paginas = [
     const Center(
       child: Text('Início'),
@@ -40,8 +63,21 @@ class _MainLayoutState extends State<MainLayout> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
+        leading: mostrandoAlterarSenha
+        ? IconButton(
+            onPressed: voltarParaPerfil,
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            ),
+          )
+        : null,
         title: Text(
-          mostrandoPerfil ? 'Perfil' : titulos[paginaAtual],
+          mostrandoAlterarSenha
+              ? 'Alterar senha'
+              : mostrandoPerfil
+                  ? 'Perfil'
+                  : titulos[paginaAtual],
           style: const TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
@@ -106,7 +142,13 @@ class _MainLayoutState extends State<MainLayout> {
           ),
         ),
       ),
-      body: mostrandoPerfil ? const Perfil() : paginas[paginaAtual],
+      body: mostrandoAlterarSenha
+      ? const AlterarSenhaPage()
+      : mostrandoPerfil
+          ? Perfil(
+              onEditarSenha: abrirAlterarSenha,
+            )
+          : paginas[paginaAtual],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: paginaAtual,
         type: BottomNavigationBarType.fixed,
@@ -119,6 +161,7 @@ class _MainLayoutState extends State<MainLayout> {
           setState(() {
             paginaAtual = index;
             mostrandoPerfil = false;
+            mostrandoAlterarSenha = false;
           });
         },
         items: const [
