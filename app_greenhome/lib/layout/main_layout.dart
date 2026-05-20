@@ -1,4 +1,3 @@
-//main_layout.dart
 import 'package:flutter/material.dart';
 import '../pages/perfil/perfil_page.dart';
 import '../pages/dicas/dicas_page.dart';
@@ -44,9 +43,7 @@ class _MainLayoutState extends State<MainLayout> {
     const Center(
       child: Text('Práticas'),
     ),
-    const Center(
-      child: Text('Metas'),
-    ),
+    const MetasPage(),
     const DicasPage(),
   ];
 
