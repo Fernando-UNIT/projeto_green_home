@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import '../pages/perfil/perfil_page.dart';
 import '../pages/dicas/dicas_page.dart';
+import '../pages/perfil/alterar_senha_page.dart';
+import '../pages/metas/metas_page.dart';
+import '../pages/praticas/praticas_page.dart';
+import '../pages/home/home_page.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
@@ -12,36 +16,56 @@ class MainLayout extends StatefulWidget {
 class _MainLayoutState extends State<MainLayout> {
   int paginaAtual = 0;
   bool mostrandoPerfil = false;
+  bool mostrandoAlterarSenha = false;
 
-  final List<Widget> paginas = [
-    const Center(
-      child: Text('Início'),
-    ),
-    const Center(
-      child: Text('Práticas'),
-    ),
-    const Center(
-      child: Text('Metas'),
-    ),
-    const DicasPage(),
-  ];
+  void abrirAlterarSenha() {
+    setState(() {
+      mostrandoPerfil = true;
+      mostrandoAlterarSenha = true;
+    });
+  }
 
-  final List<String> titulos = [
-    'Olá',
-    'Práticas',
-    'Metas',
-    'Dicas',
-  ];
+  void voltarParaPerfil() {
+    setState(() {
+      mostrandoAlterarSenha = false;
+      mostrandoPerfil = true;
+    });
+  }
+
+  final List<String> titulos = ['Olá, Carlos', 'Práticas', 'Metas', 'Dicas'];
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> paginas = [
+      HomePage(
+        onTapPraticas: () {
+          setState(() {
+            paginaAtual = 1;
+          });
+        },
+      ),
+      const PraticasPage(),
+      MetasPage(),
+      const DicasPage(),
+    ];
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(235, 255, 255, 255),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
+        leading: mostrandoAlterarSenha
+            ? IconButton(
+                onPressed: voltarParaPerfil,
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+              )
+            : null,
         title: Text(
-          mostrandoPerfil ? 'Perfil' : titulos[paginaAtual],
+          mostrandoAlterarSenha
+              ? 'Alterar senha'
+              : mostrandoPerfil
+              ? 'Perfil'
+              : titulos[paginaAtual],
           style: const TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
@@ -98,15 +122,16 @@ class _MainLayoutState extends State<MainLayout> {
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
               stops: [0.0, 1.0],
-              colors: [
-                Color(0xFF46C971),
-                Color(0xFF2A914D),
-              ],
+              colors: [Color(0xFF46C971), Color(0xFF2A914D)],
             ),
           ),
         ),
       ),
-      body: mostrandoPerfil ? const Perfil() : paginas[paginaAtual],
+      body: mostrandoAlterarSenha
+          ? const AlterarSenhaPage()
+          : mostrandoPerfil
+          ? Perfil(onEditarSenha: abrirAlterarSenha)
+          : paginas[paginaAtual],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: paginaAtual,
         type: BottomNavigationBarType.fixed,
@@ -119,13 +144,26 @@ class _MainLayoutState extends State<MainLayout> {
           setState(() {
             paginaAtual = index;
             mostrandoPerfil = false;
+            mostrandoAlterarSenha = false;
           });
         },
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_outlined),label: 'Início',),
-          BottomNavigationBarItem(icon: Icon(Icons.fact_check_outlined),label: 'Práticas',),
-          BottomNavigationBarItem(icon: Icon(Icons.track_changes),label: 'Metas',),
-          BottomNavigationBarItem(icon: Icon(Icons.lightbulb_outline),label: 'Dicas',),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            label: 'Início',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.fact_check_outlined),
+            label: 'Práticas',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.track_changes),
+            label: 'Metas',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.lightbulb_outline),
+            label: 'Dicas',
+          ),
         ],
       ),
     );

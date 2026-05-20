@@ -1,12 +1,13 @@
 import '../models/pratica.dart';
 
 class PraticasController {
-  final List<Pratica> _praticas = [
+  static final List<Pratica> _praticas = [
     Pratica(
       id: '1',
       nome: 'Reciclar Lixo',
       categoria: 'Reciclagem',
-      descricao:'Separar materiais recicláveis, como plástico, papel, vidro e metal, descartando-os corretamente.',
+      descricao:
+          'Separar materiais recicláveis, como plástico, papel, vidro e metal, descartando-os corretamente.',
       lembrete: '19:00h',
       tempo: '10 min',
       favorita: true,
@@ -15,7 +16,8 @@ class PraticasController {
       id: '2',
       nome: 'Separar Lixo',
       categoria: 'Reciclagem',
-      descricao:'Separar o lixo orgânico do lixo reciclável para facilitar o descarte sustentável.',
+      descricao:
+          'Separar o lixo orgânico do lixo reciclável para facilitar o descarte sustentável.',
       lembrete: '18:00h',
       tempo: '15 min',
       concluida: true,
@@ -24,7 +26,8 @@ class PraticasController {
       id: '3',
       nome: 'Reutilizar Embalagens',
       categoria: 'Reciclagem',
-      descricao:'Guardar embalagens que podem ser reutilizadas em casa, evitando desperdício.',
+      descricao:
+          'Guardar embalagens que podem ser reutilizadas em casa, evitando desperdício.',
       lembrete: '20:00h',
       tempo: '10 min',
     ),
@@ -32,7 +35,8 @@ class PraticasController {
       id: '4',
       nome: 'Apagar Luzes',
       categoria: 'Energia',
-      descricao:'Apagar as luzes dos cômodos que não estão sendo utilizados para economizar energia.',
+      descricao:
+          'Apagar as luzes dos cômodos que não estão sendo utilizados para economizar energia.',
       lembrete: '22:00h',
       tempo: '5 min',
       concluida: true,
@@ -42,7 +46,8 @@ class PraticasController {
       id: '5',
       nome: 'Economizar Água',
       categoria: 'Consumo',
-      descricao:'Reduzir o tempo no banho e fechar a torneira ao escovar os dentes.',
+      descricao:
+          'Reduzir o tempo no banho e fechar a torneira ao escovar os dentes.',
       lembrete: '07:00h',
       tempo: '10 min',
       concluida: true,
