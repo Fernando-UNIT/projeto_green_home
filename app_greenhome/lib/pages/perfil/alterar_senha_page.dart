@@ -4,30 +4,27 @@ class AlterarSenhaPage extends StatefulWidget {
   const AlterarSenhaPage({super.key});
 
   @override
-  State<AlterarSenhaPage> createState() =>
-      _AlterarSenhaPageState();
+  State<AlterarSenhaPage> createState() => _AlterarSenhaPageState();
 }
 
 class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
-
   final TextEditingController senhaAtualController = TextEditingController();
+  final TextEditingController novaSenhaController = TextEditingController();
+  final TextEditingController confirmarSenhaController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18,),
+        padding: const EdgeInsets.symmetric(horizontal: 18),
         child: Column(
           children: [
             const SizedBox(height: 40),
             const CircleAvatar(
               radius: 70,
               backgroundColor: Color(0xFF1F8F45),
-              child: Icon(
-                Icons.person_outline,
-                size: 90,
-                color: Colors.white,
-              ),
+              child: Icon(Icons.person_outline, size: 90, color: Colors.white),
             ),
             const SizedBox(height: 50),
             campoSenha(
@@ -35,7 +32,48 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
               hint: 'Digite sua senha',
               controller: senhaAtualController,
             ),
-            const SizedBox(height: 35),
+            const SizedBox(height: 20),
+
+            campoSenha(
+              titulo: 'Nova senha',
+              hint: 'Digite a nova senha',
+              controller: novaSenhaController,
+            ),
+
+            const SizedBox(height: 20),
+
+            campoSenha(
+              titulo: 'Confirmar senha',
+              hint: 'Digite novamente a senha',
+              controller: confirmarSenhaController,
+            ),
+            const SizedBox(height: 120),
+
+            SizedBox(
+              width: double.infinity,
+
+              height: 55,
+
+              child: ElevatedButton(
+                onPressed: () {},
+
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF34A853),
+
+                  foregroundColor: Colors.white,
+
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+
+                child: const Text(
+                  'Alterar senha',
+
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
             const SizedBox(height: 30),
           ],
         ),
@@ -49,10 +87,7 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
     required TextEditingController controller,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 15,
-        vertical: 12,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(15),
@@ -66,8 +101,7 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
       ),
       child: Row(
         children: [
-          const Icon(Icons.key_outlined, size: 28,
-          ),
+          const Icon(Icons.key_outlined, size: 28),
           const SizedBox(width: 15),
           Expanded(
             child: Column(
@@ -77,7 +111,7 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                   titulo,
                   style: const TextStyle(
                     fontSize: 20,
-                    color: Color.fromARGB(255, 56, 56, 56,),
+                    color: Color.fromARGB(255, 56, 56, 56),
                   ),
                 ),
 
@@ -87,15 +121,14 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: hint,
-                    hintStyle:
-                        const TextStyle(
+                    hintStyle: const TextStyle(
                       fontSize: 20,
-                      color: Color.fromARGB(133, 43, 43, 43,),
+                      color: Color.fromARGB(133, 43, 43, 43),
                     ),
                   ),
                   style: const TextStyle(
                     fontSize: 20,
-                    color: Color.fromARGB(255, 43, 43, 43,),
+                    color: Color.fromARGB(255, 43, 43, 43),
                   ),
                 ),
               ],
