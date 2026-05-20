@@ -1,5 +1,5 @@
+//dicas_page.dart
 import 'package:flutter/material.dart';
-
 import '../../models/dica.dart';
 import '../../services/dicas_service.dart';
 import '../../widgets/dica_card.dart';
@@ -65,7 +65,7 @@ class _DicasPageState extends State<DicasPage> {
             ],
           ),
         ),
-        
+
         const SizedBox(height: 12),
 
         Expanded(

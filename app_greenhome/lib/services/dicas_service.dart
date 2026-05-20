@@ -1,3 +1,4 @@
+//dicas_service.dart
 import 'package:flutter/material.dart';
 
 import '../models/dica.dart';
