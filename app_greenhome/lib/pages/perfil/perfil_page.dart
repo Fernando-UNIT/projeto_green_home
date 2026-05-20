@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../auth/login_page.dart'; // ajuste o caminho conforme sua estrutura
 
 class Perfil extends StatefulWidget {
   const Perfil({super.key});
@@ -177,6 +178,10 @@ class _PerfilState extends State<Perfil> {
               height: 55,
               child: ElevatedButton(
                 onPressed: () {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const LoginPage()),
+                    (route) => false, 
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
