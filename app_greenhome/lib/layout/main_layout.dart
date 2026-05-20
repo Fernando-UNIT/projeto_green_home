@@ -1,8 +1,9 @@
+//main_layout.dart
 import 'package:flutter/material.dart';
 import '../pages/perfil/perfil_page.dart';
 import '../pages/dicas/dicas_page.dart';
 import '../pages/perfil/alterar_senha_page.dart';
-
+import '../pages/metas/metas_page.dart';
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
 
@@ -43,9 +44,7 @@ class _MainLayoutState extends State<MainLayout> {
     const Center(
       child: Text('Práticas'),
     ),
-    const Center(
-      child: Text('Metas'),
-    ),
+    const MetasPage(),
     const DicasPage(),
   ];
 

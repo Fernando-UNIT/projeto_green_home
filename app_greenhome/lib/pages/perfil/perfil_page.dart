@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../controllers/usuario_controller.dart';
 import '../../models/usuario.dart';
+import '../auth/login_page.dart'; // ajuste o caminho conforme sua estrutura
 
 class Perfil extends StatefulWidget {
   final VoidCallback onEditarSenha;
@@ -62,7 +63,12 @@ class _PerfilState extends State<Perfil> {
               width: double.infinity,
               height: 55,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const LoginPage()),
+                    (route) => false, 
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                   foregroundColor: Colors.white,
