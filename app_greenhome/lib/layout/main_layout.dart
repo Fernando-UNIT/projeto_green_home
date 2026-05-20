@@ -3,6 +3,7 @@ import '../pages/perfil/perfil_page.dart';
 import '../pages/dicas/dicas_page.dart';
 import '../pages/perfil/alterar_senha_page.dart';
 import '../pages/metas/metas_page.dart';
+import '../pages/praticas/praticas_page.dart';
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
 
@@ -40,9 +41,7 @@ class _MainLayoutState extends State<MainLayout> {
     const Center(
       child: Text('Início'),
     ),
-    const Center(
-      child: Text('Práticas'),
-    ),
+    const PraticasPage(),
     const MetasPage(),
     const DicasPage(),
   ];
