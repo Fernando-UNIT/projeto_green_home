@@ -1,4 +1,4 @@
-//meta.dart
+// models/meta.dart
 class Meta {
   final String id;
   final String nome;
