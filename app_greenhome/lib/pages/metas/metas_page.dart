@@ -1,4 +1,6 @@
+// pages/metas/metas_page.dart
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../models/meta.dart';
 import '../../widgets/meta_card.dart';
 import '../../controllers/metas_controller.dart';
@@ -17,6 +19,8 @@ class _MetasPageState extends State<MetasPage> {
   final _duracaoController = TextEditingController();
 
   String _categoriaSelecionada = 'Reciclagem';
+  // Controla se o aviso de campo vazio deve ser exibido
+  bool _nomeVazio = false;
 
   @override
   void dispose() {
@@ -26,6 +30,7 @@ class _MetasPageState extends State<MetasPage> {
   }
 
   void _abrirModalNovaMeta() {
+    _nomeVazio = false;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -72,9 +77,50 @@ class _MetasPageState extends State<MetasPage> {
                     const SizedBox(height: 20),
 
                     _buildLabel('Nome da Meta'),
-                    _buildTextField(
-                      _nomeController,
-                      'Ex: Reciclar Plástico por 1 mês',
+                    // Campo de nome com borda vermelha e mensagem de erro quando vazio
+                    TextField(
+                      controller: _nomeController,
+                      onChanged: (_) {
+                        if (_nomeVazio) {
+                          setModalState(() => _nomeVazio = false);
+                        }
+                      },
+                      decoration: InputDecoration(
+                        hintText: 'Ex: Reciclar Plástico por 1 mês',
+                        hintStyle: const TextStyle(
+                          color: Colors.black26,
+                          fontSize: 14,
+                        ),
+                        filled: true,
+                        fillColor: const Color(0xFFF5F5F5),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        errorText: _nomeVazio ? 'Campo não pode ser vazio' : null,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            // Borda vermelha quando o aviso está ativo
+                            color: _nomeVazio
+                                ? Colors.redAccent
+                                : const Color(0xFFE0E0E0),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: _nomeVazio
+                                ? Colors.redAccent
+                                : const Color(0xFF46C971),
+                            width: 1.5,
+                          ),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 16),
 
@@ -87,7 +133,7 @@ class _MetasPageState extends State<MetasPage> {
                             children: [
                               _buildLabel('Categoria'),
                               DropdownButtonFormField<String>(
-                                value: _categoriaSelecionada,
+                                initialValue: _categoriaSelecionada,
                                 decoration: _inputDecorationBase(),
                                 icon: const Icon(
                                   Icons.keyboard_arrow_down,
@@ -122,10 +168,15 @@ class _MetasPageState extends State<MetasPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _buildLabel('Tempo de Duração'),
-                              _buildTextField(
-                                _duracaoController,
-                                'Ex: 30 dias',
+                              _buildLabel('Duração (dias)'),
+                              // Apenas inteiros são aceitos no campo de duração
+                              TextField(
+                                controller: _duracaoController,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
+                                decoration: _inputDecorationBase(hint: 'Ex: 30'),
                               ),
                             ],
                           ),
@@ -145,7 +196,7 @@ class _MetasPageState extends State<MetasPage> {
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: ElevatedButton(
-                          onPressed: _adicionarNovaMeta,
+                          onPressed: () => _adicionarNovaMeta(setModalState),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,
                             shadowColor: Colors.transparent,
@@ -174,8 +225,15 @@ class _MetasPageState extends State<MetasPage> {
     );
   }
 
-  void _adicionarNovaMeta() {
-    if (_nomeController.text.trim().isEmpty) return;
+  void _adicionarNovaMeta(StateSetter setModalState) {
+    // Aciona o aviso vermelho e impede a criação se o nome estiver vazio
+    if (_nomeController.text.trim().isEmpty) {
+      setModalState(() => _nomeVazio = true);
+      return;
+    }
+
+    // Converte o texto para int, usando 30 como padrão se estiver vazio
+    final int totalDias = int.tryParse(_duracaoController.text.trim()) ?? 30;
 
     setState(() {
       _metasController.adicionar(
@@ -184,6 +242,7 @@ class _MetasPageState extends State<MetasPage> {
           nome: _nomeController.text,
           categoria: _categoriaSelecionada,
           duracao: _duracaoController.text,
+          totalDias: totalDias,
         ),
       );
     });
@@ -231,12 +290,7 @@ class _MetasPageState extends State<MetasPage> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String hint) {
-    return TextField(
-      controller: controller,
-      decoration: _inputDecorationBase(hint: hint),
-    );
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -270,6 +324,16 @@ class _MetasPageState extends State<MetasPage> {
                       onDelete: () {
                         setState(() {
                           _metasController.remover(index);
+                        });
+                      },
+                      onIncrement: () {
+                        setState(() {
+                          _metasController.incrementar(index);
+                        });
+                      },
+                      onDecrement: () {
+                        setState(() {
+                          _metasController.decrementar(index);
                         });
                       },
                     );

@@ -1,15 +1,19 @@
-//meta_card.dart
+// widgets/meta_card.dart
 import 'package:flutter/material.dart';
 import '../models/meta.dart';
 
 class MetaCard extends StatelessWidget {
   final Meta meta;
   final VoidCallback onDelete;
+  final VoidCallback onIncrement;
+  final VoidCallback onDecrement;
 
   const MetaCard({
     super.key,
     required this.meta,
     required this.onDelete,
+    required this.onIncrement,
+    required this.onDecrement,
   });
 
   @override
@@ -100,16 +104,44 @@ class MetaCard extends StatelessWidget {
                   fontSize: 14,
                 ),
               ),
-              // Botão de deletar meta
-              IconButton(
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                onPressed: onDelete,
-                icon: const Icon(
-                  Icons.delete_outline,
-                  color: Colors.redAccent,
-                  size: 22,
-                ),
+              Row(
+                children: [
+                  // Botão de decrementar progresso
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    onPressed: onDecrement,
+                    icon: const Icon(
+                      Icons.remove_circle_outline,
+                      color: Colors.black45,
+                      size: 22,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  // Botão de incrementar progresso
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    onPressed: onIncrement,
+                    icon: const Icon(
+                      Icons.add_circle_outline,
+                      color: Color(0xFF46C971),
+                      size: 22,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  // Botão de deletar meta
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    onPressed: onDelete,
+                    icon: const Icon(
+                      Icons.delete_outline,
+                      color: Colors.redAccent,
+                      size: 22,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
