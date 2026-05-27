@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
-
 import '../../models/pratica.dart';
 
 class NovaPraticaPage extends StatefulWidget {
   final Pratica? pratica;
 
-  const NovaPraticaPage({
-    super.key,
-    this.pratica,
-  });
+  const NovaPraticaPage({super.key, this.pratica});
 
   @override
   State<NovaPraticaPage> createState() => _NovaPraticaPageState();
@@ -26,7 +22,6 @@ class _NovaPraticaPageState extends State<NovaPraticaPage> {
   @override
   void initState() {
     super.initState();
-
     if (editando) {
       nomeController.text = widget.pratica!.nome;
       categoriaController.text = widget.pratica!.categoria;
@@ -39,9 +34,7 @@ class _NovaPraticaPageState extends State<NovaPraticaPage> {
   void salvar() {
     if (nomeController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Digite o nome da prática.'),
-        ),
+        const SnackBar(content: Text('Digite o nome da prática.')),
       );
       return;
     }
@@ -82,59 +75,76 @@ class _NovaPraticaPageState extends State<NovaPraticaPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFEFEFEF),
-      appBar: AppBar(
-        title: Text(editando ? 'Editar Prática' : 'Nova Prática'),
-        backgroundColor: const Color(0xFF34A853),
-        foregroundColor: Colors.white,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(18),
-        child: Container(
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(22),
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x26000000),
-                offset: Offset(2, 4),
-                blurRadius: 5,
-              ),
-            ],
-          ),
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(20, 18, 20, 22),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
+        ),
+        child: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
+             
+              Center(
+                child: Container(
+                  width: 48,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 18),
+
+              
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      editando ? 'Editar Prática' : 'Nova Prática',
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              // Campos do formulário
               _CampoTexto(
                 label: 'Nome da Prática',
                 hint: 'Ex: Separar lixo orgânico',
                 controller: nomeController,
               ),
               const SizedBox(height: 14),
-
               _CampoTexto(
                 label: 'Categoria',
                 hint: 'Ex: Reciclagem, Energia, Consumo',
                 controller: categoriaController,
               ),
               const SizedBox(height: 14),
-
               _CampoTexto(
                 label: 'Lembrete',
                 hint: 'Ex: Todo dia, 19:00h',
                 controller: lembreteController,
               ),
               const SizedBox(height: 14),
-
               _CampoTexto(
                 label: 'Tempo',
                 hint: 'Ex: 10 min',
                 controller: tempoController,
               ),
               const SizedBox(height: 14),
-
               _CampoTexto(
                 label: 'Descrição',
                 hint: 'Descreva a prática sustentável',
@@ -143,6 +153,7 @@ class _NovaPraticaPageState extends State<NovaPraticaPage> {
               ),
               const SizedBox(height: 24),
 
+              // Botão salvar
               SizedBox(
                 width: double.infinity,
                 height: 48,
@@ -205,21 +216,14 @@ class _CampoTexto extends StatelessWidget {
             hintText: hint,
             filled: true,
             fillColor: const Color(0xFFF3F3F3),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 12,
-            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(
-                color: Colors.grey.shade300,
-              ),
+              borderSide: BorderSide(color: Colors.grey.shade300),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(
-                color: Colors.grey.shade300,
-              ),
+              borderSide: BorderSide(color: Colors.grey.shade300),
             ),
           ),
         ),

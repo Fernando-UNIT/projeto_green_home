@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../models/pratica.dart';
 import 'nova_pratica_page.dart';
 
@@ -61,13 +60,11 @@ class _DetalhePraticaPageState extends State<DetalhePraticaPage> {
   }
 
   Future<void> editarPratica() async {
-    final praticaAtualizada = await Navigator.push<Pratica>(
-      context,
-      MaterialPageRoute(
-        builder: (_) => NovaPraticaPage(
-          pratica: pratica,
-        ),
-      ),
+    final praticaAtualizada = await showModalBottomSheet<Pratica>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => NovaPraticaPage(pratica: pratica),
     );
 
     if (praticaAtualizada != null) {
@@ -94,165 +91,136 @@ class _DetalhePraticaPageState extends State<DetalhePraticaPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFEFEFEF),
-      appBar: AppBar(
-        title: const Text('Detalhes da Prática'),
-        backgroundColor: const Color(0xFF34A853),
-        foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            onPressed: editarPratica,
-            icon: const Icon(Icons.edit),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(22),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color(0x26000000),
-                    offset: Offset(2, 4),
-                    blurRadius: 5,
-                  ),
-                ],
-              ),
-              child: Column(
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(22, 18, 22, 22),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Header
+              Row(
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 64,
-                        height: 64,
-                        decoration: BoxDecoration(
-                          color: cor.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                        child: Icon(
-                          icone,
-                          color: cor,
-                          size: 38,
-                        ),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                  Container(
+                    width: 58,
+                    height: 58,
+                    decoration: BoxDecoration(
+                      color: cor.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Icon(icone, color: cor, size: 38),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
                           children: [
-                            Text(
-                              pratica.nome,
-                              style: const TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
+                            Flexible(
+                              child: Text(
+                                pratica.nome,
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              pratica.categoria,
-                              style: const TextStyle(
-                                color: Color(0xFF777777),
-                              ),
+                            const SizedBox(width: 4),
+                            Icon(
+                              pratica.favorita ? Icons.star : Icons.star_border,
+                              color: Colors.amber,
                             ),
                           ],
                         ),
-                      ),
-                      Icon(
-                        pratica.favorita ? Icons.star : Icons.star_border,
-                        color: pratica.favorita ? Colors.amber : Colors.grey,
-                      ),
-                    ],
+                        Text(
+                          pratica.categoria,
+                          style: const TextStyle(color: Colors.grey, fontSize: 14),
+                        ),
+                      ],
+                    ),
                   ),
-
-                  const SizedBox(height: 24),
-
-                  _LinhaDetalhe(
-                    titulo: 'Descrição',
-                    valor: pratica.descricao,
-                  ),
-                  const Divider(height: 28),
-
-                  _LinhaDetalhe(
-                    titulo: 'Lembrete',
-                    valor: pratica.lembrete,
-                  ),
-                  const Divider(height: 28),
-
-                  _LinhaDetalhe(
-                    titulo: 'Tempo',
-                    valor: pratica.tempo,
-                  ),
-                  const Divider(height: 28),
-
-                  _LinhaDetalhe(
-                    titulo: 'Estado atual',
-                    valor: pratica.concluida ? 'Concluída' : 'Pendente',
-                    corValor:
-                        pratica.concluida ? const Color(0xFF34A853) : Colors.orange,
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close, size: 30),
                   ),
                 ],
               ),
-            ),
 
-            const SizedBox(height: 24),
+              const SizedBox(height: 18),
 
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton(
-                onPressed: alternarConclusao,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: pratica.concluida
-                      ? Colors.orange
-                      : const Color(0xFF34A853),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+              // Detalhes
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF1F1F1),
+                  borderRadius: BorderRadius.circular(14),
                 ),
-                child: Text(
-                  pratica.concluida
-                      ? 'Pendente'
-                      : 'Concluir',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 12),
-
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: OutlinedButton(
-                onPressed: excluirPratica,
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(
-                    color: Colors.red,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text(
-                  'Excluir prática',
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontWeight: FontWeight.bold,
-                  ),
+                child: Column(
+                  children: [
+                    _LinhaDetalhe(titulo: 'Descrição', valor: pratica.descricao),
+                    const Divider(),
+                    _LinhaDetalhe(titulo: 'Lembrete', valor: pratica.lembrete),
+                    const Divider(),
+                    _LinhaDetalhe(titulo: 'Tempo', valor: pratica.tempo),
+                    const Divider(),
+                    _LinhaDetalhe(
+                      titulo: 'Estado Atual',
+                      valor: pratica.concluida ? 'Concluída' : 'Pendente',
+                      corValor: pratica.concluida ? const Color(0xFF34A853) : Colors.amber,
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ],
+
+              const SizedBox(height: 28),
+
+              // Botões
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 48,
+                      child: ElevatedButton(
+                        onPressed: excluirPratica,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.redAccent,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        child: const Text(
+                          'Excluir',
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: SizedBox(
+                      height: 48,
+                      child: ElevatedButton(
+                        onPressed: alternarConclusao,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF34A853),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        child: Text(
+                          pratica.concluida ? 'Pendente' : 'Concluir',
+                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -265,10 +233,11 @@ class _LinhaDetalhe extends StatelessWidget {
   final Color? corValor;
 
   const _LinhaDetalhe({
+    Key? key,
     required this.titulo,
     required this.valor,
     this.corValor,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
