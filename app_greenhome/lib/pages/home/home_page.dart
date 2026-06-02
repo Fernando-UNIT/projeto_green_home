@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../controllers/metas_controller.dart';
+// TODO Kayky, comentei isso aqui pois estava dando problema no meu, na hora de vc fazer, lembre de corrigir isto
+//import '../../controllers/metas_controller.dart';
 import '../../controllers/praticas_controller.dart';
 
 class HomePage extends StatelessWidget {
@@ -9,8 +10,10 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final metasController = MetasController();
-    final listaDeMetas = metasController.metas;
+    // TODO Kayky, comentei isso aqui pois estava dando problema no meu, na hora de vc fazer, lembre de corrigir isto
+    //final metasController = MetasController();
+    //final listaDeMetas = metasController.metas;
+    final listaDeMetas = [];
 
     final praticasController = PraticasController();
     final listaDePraticas = praticasController.listar();
