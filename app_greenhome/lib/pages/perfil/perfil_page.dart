@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../controllers/usuario_controller.dart';
 import '../../models/usuario.dart';
-import '../auth/login_page.dart'; // ajuste o caminho conforme sua estrutura
+import '../auth/login_page.dart';
 
 class Perfil extends StatefulWidget {
   final VoidCallback onEditarSenha;
@@ -14,84 +14,90 @@ class Perfil extends StatefulWidget {
   @override
   State<Perfil> createState() => _PerfilState();
 }
+
 class _PerfilState extends State<Perfil> {
-  final UsuarioController controller = UsuarioController();
-  late Usuario usuario;
+  final UsuarioController controller = UsuarioController(); //responsavel pela comunicação com service/firebase
+  Future<Usuario>? usuarioFuture; //armazena os dados do usuário
 
   @override
   void initState() {
     super.initState();
-    usuario = controller.buscarUsuario();
+    usuarioFuture = controller.buscarUsuario(); //Busca os dados do usuario logado no firebase
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 18,
-        ),
-        child: Column(
-          children: [
-            const SizedBox(height: 40),
-            const CircleAvatar(
-              radius: 70,
-              backgroundColor: Color(0xFF1F8F45),
-              child: Icon( Icons.person_outline, size: 90, color: Colors.white, ),
+    return FutureBuilder<Usuario>(
+      future: usuarioFuture,
+      builder: (context, snapshot) {
+        final usuario = snapshot.data!;  //mostra os dados retornados do firebase
+        return SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 18,
             ),
-            const SizedBox(height: 50),
-            campoPerfil(
-              icone: Icons.email_outlined,
-              titulo: 'E-mail',
-              valor: usuario.email,
-            ),
-            const SizedBox(height: 20),
-            campoPerfil(
-              icone: Icons.person_outline,
-              titulo: 'Nome de usuário',
-              valor: usuario.nome,
-            ),
-            const SizedBox(height: 20),
-            campoPerfil(
-              icone: Icons.key_outlined,
-              titulo: 'Senha',
-              valor: '************',
-              mostrarBotaoEditar: true,
-            ),
-            const SizedBox(height: 35),
-            SizedBox(
-              width: double.infinity,
-              height: 55,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (_) => const LoginPage()),
-                    (route) => false, 
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(15),
+            child: Column(
+              children: [
+                const SizedBox(height: 40),
+                const CircleAvatar(
+                  radius: 70,
+                  backgroundColor: Color(0xFF1F8F45),
+                  child: Icon( Icons.person_outline, size: 90, color: Colors.white, ),
+                ),
+                const SizedBox(height: 50),
+                campoPerfil(            
+                  icone: Icons.email_outlined,
+                  titulo: 'E-mail',
+                  valor: usuario.email,
+                ),
+                const SizedBox(height: 20),
+                campoPerfil(
+                  icone: Icons.person_outline,
+                  titulo: 'Nome de usuário',
+                  valor: usuario.nome,
+                ),
+                const SizedBox(height: 20),
+                campoPerfil(
+                  icone: Icons.key_outlined,
+                  titulo: 'Senha',
+                  valor: '************',
+                  mostrarBotaoEditar: true,
+                ),
+                const SizedBox(height: 35),
+                SizedBox(
+                  width: double.infinity,
+                  height: 55,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (_) => const LoginPage()),
+                        (route) => false,
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                    child: const Text(
+                      'Sair da conta',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
-                child: const Text(
-                  'Sair da conta',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
+                const SizedBox(height: 30),
+              ],
             ),
-            const SizedBox(height: 30),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
-  }
+   }
 
   Widget campoPerfil({
     required IconData icone,
