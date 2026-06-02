@@ -225,27 +225,21 @@ class _MetasPageState extends State<MetasPage> {
     );
   }
 
-  void _adicionarNovaMeta(StateSetter setModalState) {
-    // Aciona o aviso vermelho e impede a criação se o nome estiver vazio
+void _adicionarNovaMeta(StateSetter setModalState) {
     if (_nomeController.text.trim().isEmpty) {
       setModalState(() => _nomeVazio = true);
       return;
     }
 
-    // Converte o texto para int, usando 30 como padrão se estiver vazio
     final int totalDias = int.tryParse(_duracaoController.text.trim()) ?? 30;
 
-    setState(() {
-      _metasController.adicionar(
-        Meta(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          nome: _nomeController.text,
-          categoria: _categoriaSelecionada,
-          duracao: _duracaoController.text,
-          totalDias: totalDias,
-        ),
-      );
-    });
+    // Não precisamos mais dar setState, o StreamBuilder atualiza a tela sozinho
+    _metasController.adicionar(
+      _nomeController.text,
+      _categoriaSelecionada,
+      _duracaoController.text,
+      totalDias,
+    );
 
     _nomeController.clear();
     _duracaoController.clear();
@@ -294,8 +288,6 @@ class _MetasPageState extends State<MetasPage> {
 
   @override
   Widget build(BuildContext context) {
-    final listaDeMetas = _metasController.metas;
-
     return Column(
       children: [
         const Padding(
@@ -306,39 +298,48 @@ class _MetasPageState extends State<MetasPage> {
           ),
         ),
         Expanded(
-          child: listaDeMetas.isEmpty
-              ? const Center(
+          // StreamBuilder conecta diretamente com o Firestore e atualiza ao vivo
+          child: StreamBuilder<List<Meta>>(
+            stream: _metasController.metasStream,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator(color: Color(0xFF46C971)));
+              }
+
+              if (snapshot.hasError) {
+                return const Center(
+                  child: Text('Erro ao carregar dados.', style: TextStyle(color: Colors.black45))
+                );
+              }
+
+              final listaDeMetas = snapshot.data ?? [];
+
+              if (listaDeMetas.isEmpty) {
+                return const Center(
                   child: Text(
                     'Você ainda não possui metas registradas.',
                     style: TextStyle(color: Colors.black45),
                   ),
-                )
-              : ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  itemCount: listaDeMetas.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 16),
-                  itemBuilder: (context, index) {
-                    final meta = listaDeMetas[index];
-                    return MetaCard(
-                      meta: meta,
-                      onDelete: () {
-                        setState(() {
-                          _metasController.remover(index);
-                        });
-                      },
-                      onIncrement: () {
-                        setState(() {
-                          _metasController.incrementar(index);
-                        });
-                      },
-                      onDecrement: () {
-                        setState(() {
-                          _metasController.decrementar(index);
-                        });
-                      },
-                    );
-                  },
-                ),
+                );
+              }
+
+              return ListView.separated(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                itemCount: listaDeMetas.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 16),
+                itemBuilder: (context, index) {
+                  final meta = listaDeMetas[index];
+                  return MetaCard(
+                    meta: meta,
+                    // Ao invés do Index, passamos o ID do banco ou o próprio objeto
+                    onDelete: () => _metasController.remover(meta.id),
+                    onIncrement: () => _metasController.incrementar(meta),
+                    onDecrement: () => _metasController.decrementar(meta),
+                  );
+                },
+              );
+            },
+          ),
         ),
         Padding(
           padding: const EdgeInsets.all(24.0),
