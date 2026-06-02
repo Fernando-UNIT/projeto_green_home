@@ -16,13 +16,13 @@ class Perfil extends StatefulWidget {
 }
 
 class _PerfilState extends State<Perfil> {
-  final UsuarioController controller = UsuarioController(); //responsavel pela comunicação com service/firebase
+  final UsuarioController controller = UsuarioController(); //responsável pela comunicação com service/firebase
   Future<Usuario>? usuarioFuture; //armazena os dados do usuário
 
   @override
   void initState() {
     super.initState();
-    usuarioFuture = controller.buscarUsuario(); //Busca os dados do usuario logado no firebase
+    usuarioFuture = controller.buscarUsuario(); //Busca os dados do usuário logado no firebase
   }
 
   @override
@@ -30,6 +30,29 @@ class _PerfilState extends State<Perfil> {
     return FutureBuilder<Usuario>(
       future: usuarioFuture,
       builder: (context, snapshot) {
+
+        if (snapshot.connectionState ==
+            ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(
+              snapshot.error.toString(),
+            ),
+          );
+        }
+
+        if (!snapshot.hasData) {
+          return const Center(
+            child: Text(
+              'Erro ao carregar usuário',
+            ),
+          );
+        }
         final usuario = snapshot.data!;  //mostra os dados retornados do firebase
         return SingleChildScrollView(
           child: Padding(
@@ -45,7 +68,7 @@ class _PerfilState extends State<Perfil> {
                   child: Icon( Icons.person_outline, size: 90, color: Colors.white, ),
                 ),
                 const SizedBox(height: 50),
-                campoPerfil(            
+                campoPerfil(              //campos que mostram as infirmacoes do usuario
                   icone: Icons.email_outlined,
                   titulo: 'E-mail',
                   valor: usuario.email,
@@ -68,9 +91,12 @@ class _PerfilState extends State<Perfil> {
                   width: double.infinity,
                   height: 55,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      await controller.logout();
                       Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(builder: (_) => const LoginPage()),
+                        MaterialPageRoute(
+                          builder: (_) => const LoginPage(),
+                        ),
                         (route) => false,
                       );
                     },
