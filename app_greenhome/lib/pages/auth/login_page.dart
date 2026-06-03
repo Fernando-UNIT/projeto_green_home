@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../layout/main_layout.dart';
 import 'cadastro_page.dart';
+import 'recuperar_senha_page.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -48,11 +50,10 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _esqueceuSenha() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Recuperação de senha em breve!')),
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const RecuperarSenhaPage()),
     );
   }
-
   void _cadastrar() {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const CadastroPage()),
