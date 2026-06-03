@@ -6,7 +6,7 @@ import '../../controllers/praticas_controller.dart';
 class HomePage extends StatelessWidget {
   final VoidCallback onTapPraticas;
 
-  HomePage({Key? key, required this.onTapPraticas}) : super(key: key);
+  const HomePage({super.key, required this.onTapPraticas});
 
   @override
   Widget build(BuildContext context) {

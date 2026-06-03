@@ -92,7 +92,9 @@ class _DetalhePraticaPageState extends State<DetalhePraticaPage> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: Container(
         padding: const EdgeInsets.fromLTRB(22, 18, 22, 22),
         decoration: const BoxDecoration(
@@ -110,7 +112,7 @@ class _DetalhePraticaPageState extends State<DetalhePraticaPage> {
                     width: 58,
                     height: 58,
                     decoration: BoxDecoration(
-                      color: cor.withOpacity(0.15),
+                      color: cor.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: Icon(icone, color: cor, size: 38),
@@ -140,7 +142,10 @@ class _DetalhePraticaPageState extends State<DetalhePraticaPage> {
                         ),
                         Text(
                           pratica.categoria,
-                          style: const TextStyle(color: Colors.grey, fontSize: 14),
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 14,
+                          ),
                         ),
                       ],
                     ),
@@ -164,7 +169,10 @@ class _DetalhePraticaPageState extends State<DetalhePraticaPage> {
                 ),
                 child: Column(
                   children: [
-                    _LinhaDetalhe(titulo: 'Descrição', valor: pratica.descricao),
+                    _LinhaDetalhe(
+                      titulo: 'Descrição',
+                      valor: pratica.descricao,
+                    ),
                     const Divider(),
                     _LinhaDetalhe(titulo: 'Lembrete', valor: pratica.lembrete),
                     const Divider(),
@@ -173,7 +181,9 @@ class _DetalhePraticaPageState extends State<DetalhePraticaPage> {
                     _LinhaDetalhe(
                       titulo: 'Estado Atual',
                       valor: pratica.concluida ? 'Concluída' : 'Pendente',
-                      corValor: pratica.concluida ? const Color(0xFF34A853) : Colors.amber,
+                      corValor: pratica.concluida
+                          ? const Color(0xFF34A853)
+                          : Colors.amber,
                     ),
                   ],
                 ),
@@ -191,11 +201,16 @@ class _DetalhePraticaPageState extends State<DetalhePraticaPage> {
                         onPressed: excluirPratica,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.redAccent,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                         child: const Text(
                           'Excluir',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
@@ -208,11 +223,16 @@ class _DetalhePraticaPageState extends State<DetalhePraticaPage> {
                         onPressed: alternarConclusao,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF34A853),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                         child: Text(
                           pratica.concluida ? 'Pendente' : 'Concluir',
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
@@ -233,11 +253,11 @@ class _LinhaDetalhe extends StatelessWidget {
   final Color? corValor;
 
   const _LinhaDetalhe({
-    Key? key,
+    super.key,
     required this.titulo,
     required this.valor,
     this.corValor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -260,7 +280,9 @@ class _LinhaDetalhe extends StatelessWidget {
             textAlign: TextAlign.right,
             style: TextStyle(
               color: corValor ?? Colors.black87,
-              fontWeight: corValor == null ? FontWeight.normal : FontWeight.bold,
+              fontWeight: corValor == null
+                  ? FontWeight.normal
+                  : FontWeight.bold,
             ),
           ),
         ),

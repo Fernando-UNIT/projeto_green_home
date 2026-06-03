@@ -1,6 +1,8 @@
+import 'recuperar_senha_page.dart';
 import 'package:flutter/material.dart';
 import '../../layout/main_layout.dart';
 import 'cadastro_page.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -42,21 +44,21 @@ class _LoginPageState extends State<LoginPage> {
 
     if (!mounted) return;
 
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const MainLayout()),
-    );
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => const MainLayout()));
   }
 
   void _esqueceuSenha() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Recuperação de senha em breve!')),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const RecuperarSenhaPage()));
   }
 
   void _cadastrar() {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const CadastroPage()),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const CadastroPage()));
   }
 
   @override
@@ -72,17 +74,17 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset(
-                    'assets/images/greenhome_logo.png',
-                    height: 200, 
-                  ),
+                  Image.asset('assets/images/greenhome_logo.png', height: 200),
                   const SizedBox(height: 36),
 
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
-                    decoration: _inputDecoration('E-mail', Icons.email_outlined),
+                    decoration: _inputDecoration(
+                      'E-mail',
+                      Icons.email_outlined,
+                    ),
                     validator: (v) {
                       if (v == null || v.trim().isEmpty) {
                         return 'Informe seu e-mail';
@@ -153,7 +155,9 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(30),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF46C971).withValues(alpha: 0.35),
+                            color: const Color(
+                              0xFF46C971,
+                            ).withValues(alpha: 0.35),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),
@@ -234,8 +238,7 @@ class _LoginPageState extends State<LoginPage> {
       suffixIcon: suffixIcon,
       filled: true,
       fillColor: Colors.white,
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: Color(0xFFDDE0DE)),
