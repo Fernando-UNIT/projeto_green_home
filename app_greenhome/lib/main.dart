@@ -10,9 +10,9 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  await FirebaseAuth.instance.signInWithEmailAndPassword(
+  await FirebaseAuth.instance.signInWithEmailAndPassword( //Autenticacao provisoria, ate as telas de login e cadastro estarem prontas
     email: 'testeuser@souunit.com.br',
-    password: '123456',
+    password: 'abcdef', 
   );
 
   runApp(const GreenHomeApp());

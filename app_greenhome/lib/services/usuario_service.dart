@@ -8,12 +8,12 @@ class UsuarioService {
 
   Future<Usuario> getUsuario() async { //busca o usuario
     User? user = auth.currentUser;
-
+    
     if (user == null) {
       throw Exception('Usuário não autenticado',);
     }
-    if (!user.email!                      
-        .endsWith('@souunit.com.br')) { //verifica se esta com email da unit
+    
+    if (!user.email!.endsWith('@souunit.com.br')) { //verifica se esta com email da unit
       await auth.signOut();
       throw Exception('Use um email institucional',);
     }
