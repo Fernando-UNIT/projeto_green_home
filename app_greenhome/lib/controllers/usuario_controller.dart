@@ -2,8 +2,8 @@ import '../models/usuario.dart';
 import '../services/usuario_service.dart';
 
 class UsuarioController {
-  final UsuarioService service =
-      UsuarioService();
+  final UsuarioService service = UsuarioService();
+
   Future<Usuario> buscarUsuario() async {   //busca o usuario
     return await service.getUsuario();
   }
@@ -16,15 +16,17 @@ class UsuarioController {
     if (senhaAtual.isEmpty ||     //validacao dos campos
         novaSenha.isEmpty ||
         confirmarSenha.isEmpty) {
-
       return 'Preencha todos os campos';
     }
+
     if (novaSenha != confirmarSenha) {   //confirma a nova senha
       return 'As senhas não são iguais';
     }
+
     if (novaSenha.length < 6) {
       return 'A senha deve ter no min. 6 caracteres';
     }
+    
     try {
       await service.alterarSenha(
         senhaAtual: senhaAtual,

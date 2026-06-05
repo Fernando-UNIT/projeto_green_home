@@ -48,9 +48,7 @@ class _PerfilState extends State<Perfil> {
 
         if (!snapshot.hasData) {
           return const Center(
-            child: Text(
-              'Erro ao carregar usuário',
-            ),
+            child: Text('Erro ao carregar usuário',),
           );
         }
         final usuario = snapshot.data!;  //mostra os dados retornados do firebase
@@ -94,9 +92,7 @@ class _PerfilState extends State<Perfil> {
                     onPressed: () async {
                       await controller.logout();
                       Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                          builder: (_) => const LoginPage(),
-                        ),
+                        MaterialPageRoute(builder: (_) => const LoginPage(),),
                         (route) => false,
                       );
                     },

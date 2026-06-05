@@ -1,19 +1,15 @@
-
 import 'package:flutter/material.dart';
-
 import '../../controllers/usuario_controller.dart';
 
 class AlterarSenhaPage extends StatefulWidget {
   const AlterarSenhaPage({super.key});
 
   @override
-  State<AlterarSenhaPage> createState() =>
-      _AlterarSenhaPageState();
+  State<AlterarSenhaPage> createState() => _AlterarSenhaPageState();
 }
 
 class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
-
-  final UsuarioController controller = UsuarioController();
+  final UsuarioController controller = UsuarioController();     // Controllers responsável pelas regras de negócio e dos campos de texto
   final TextEditingController senhaAtualController = TextEditingController();
   final TextEditingController novaSenhaController = TextEditingController();
   final TextEditingController confirmarSenhaController = TextEditingController();
@@ -38,7 +34,7 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
               ),
             ),
             const SizedBox(height: 50),
-            campoSenha(
+            campoSenha(  //Campos para inserior a senha atual e nova senha
               titulo: 'Senha atual',
               hint: 'Digite sua senha',
               controller: senhaAtualController,
@@ -60,15 +56,31 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
               width: double.infinity,
               height: 55,
               child: ElevatedButton(
-                onPressed: () {
-                  controller.alterarSenha(
+                onPressed: () async {  //aqui envia os dados para o controller realizar as validações e solicitar a alteração da senha no firebase
+                  String? resultado =
+                      await controller.alterarSenha(
                     senhaAtual: senhaAtualController.text,
                     novaSenha: novaSenhaController.text,
                     confirmarSenha: confirmarSenhaController.text,
                   );
-                  print(senhaAtualController.text,);
-                  print(novaSenhaController.text,);
-                  print(confirmarSenhaController.text,);
+
+                  if (!context.mounted) return;
+
+                  if (resultado == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Senha alterada com sucesso!', ),
+                      ),
+                    );
+                    senhaAtualController.clear();
+                    novaSenhaController.clear();
+                    confirmarSenhaController.clear();
+
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar( content: Text(resultado), ),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF34A853),
