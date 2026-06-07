@@ -1,7 +1,8 @@
-//dica.dart
+// models/dica.dart
 import 'package:flutter/material.dart';
 
 class Dica {
+  final String id; 
   final IconData icon;
   final Color iconColor;
   final Color iconBgColor;
@@ -10,6 +11,7 @@ class Dica {
   bool favorito;
 
   Dica({
+    required this.id,
     required this.icon,
     required this.iconColor,
     required this.iconBgColor,
