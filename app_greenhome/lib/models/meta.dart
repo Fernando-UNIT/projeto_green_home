@@ -18,7 +18,7 @@ class Meta {
     required this.criadoPor,
   });
 
-  // Retorna o progresso em formato decimal e evita dividir por 0 [cite: 8]
+  // Retorna o progresso em formato decimal e evita dividir por 0
   double get percentual {
     if (totalDias <= 0) return 0.0;
     return progressoDias / totalDias;
