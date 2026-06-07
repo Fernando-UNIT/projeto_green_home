@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'login_page.dart'; // ajuste o caminho conforme sua estrutura
+import '../../layout/main_layout.dart';
+import '../../services/auth_service.dart';
+import 'login_page.dart';
 
 class CadastroPage extends StatefulWidget {
   const CadastroPage({super.key});
@@ -41,17 +44,40 @@ class _CadastroPageState extends State<CadastroPage> {
 
     setState(() => _carregando = true);
 
-    // Simula cadastro — substitua pela sua lógica real
-    await Future.delayed(const Duration(seconds: 1));
+    try {
+      // Cria conta no auth e salva no Firestore
+      await AuthService.cadastrarEmail(
+        nome: _nomeController.text,
+        email: _emailController.text,
+        senha: _senhaController.text,
+      );
 
-    setState(() => _carregando = false);
+      if (!mounted) return;
 
-    if (!mounted) return;
-
-    // Após cadastro, volta para o login
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const LoginPage()),
-    );
+      // Após cadastro vai direto pra o app
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const MainLayout()),
+        (route) => false,
+      );
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AuthService.traduzirErro(e.code)),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Erro ao cadastrar. Tente novamente.'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _carregando = false);
+    }
   }
 
   void _fazerLogin() {
@@ -73,14 +99,13 @@ class _CadastroPageState extends State<CadastroPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // ── Logo ─────────────────────────────────────────────
                   Image.asset(
                     'assets/images/greenhome_logo.png',
                     height: 200,
                   ),
                   const SizedBox(height: 36),
 
-                  // ── Campo Nome ────────────────────────────────────────
+                  // Campo nome
                   TextFormField(
                     controller: _nomeController,
                     keyboardType: TextInputType.name,
@@ -88,36 +113,30 @@ class _CadastroPageState extends State<CadastroPage> {
                     textCapitalization: TextCapitalization.words,
                     decoration: _inputDecoration('Nome', Icons.person_outline),
                     validator: (v) {
-                      if (v == null || v.trim().isEmpty) {
-                        return 'Informe seu nome';
-                      }
-                      if (v.trim().length < 2) {
-                        return 'Nome muito curto';
-                      }
+                      if (v == null || v.trim().isEmpty) return 'Informe seu nome';
+                      if (v.trim().length < 2) return 'Nome muito curto';
                       return null;
                     },
                   ),
                   const SizedBox(height: 14),
 
-                  // ── Campo E-mail ──────────────────────────────────────
+                  // Campo email
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
                     decoration: _inputDecoration('E-mail', Icons.email_outlined),
                     validator: (v) {
-                      if (v == null || v.trim().isEmpty) {
-                        return 'Informe seu e-mail';
-                      }
-                      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(v.trim())) {
-                        return 'E-mail inválido';
+                      if (v == null || v.trim().isEmpty) return 'Informe seu e-mail';
+                      if (!v.trim().endsWith('@souunit.com.br')) {
+                        return 'Use seu e-mail institucional (@souunit.com.br)';
                       }
                       return null;
                     },
                   ),
                   const SizedBox(height: 14),
 
-                  // ── Campo Senha ───────────────────────────────────────
+                  // Campo senha 
                   TextFormField(
                     controller: _senhaController,
                     obscureText: !_senhaVisivel,
@@ -144,7 +163,7 @@ class _CadastroPageState extends State<CadastroPage> {
                   ),
                   const SizedBox(height: 14),
 
-                  // ── Campo Repetir Senha ───────────────────────────────
+                  // Campo repetir senha
                   TextFormField(
                     controller: _repetirSenhaController,
                     obscureText: !_repetirSenhaVisivel,
@@ -174,7 +193,7 @@ class _CadastroPageState extends State<CadastroPage> {
                   ),
                   const SizedBox(height: 32),
 
-                  // ── Botão Cadastrar ───────────────────────────────────
+                  // Botão cadastrar
                   SizedBox(
                     width: double.infinity,
                     height: 52,
@@ -222,7 +241,7 @@ class _CadastroPageState extends State<CadastroPage> {
                   ),
                   const SizedBox(height: 24),
 
-                  // ── Já tem conta? ─────────────────────────────────────
+                  // ja tem conta
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -266,8 +285,7 @@ class _CadastroPageState extends State<CadastroPage> {
       suffixIcon: suffixIcon,
       filled: true,
       fillColor: Colors.white,
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: Color(0xFFDDE0DE)),

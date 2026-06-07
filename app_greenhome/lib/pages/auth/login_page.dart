@@ -1,7 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../layout/main_layout.dart';
+import '../../services/auth_service.dart';
 import 'cadastro_page.dart';
-import 'recuperar_senha_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -16,6 +17,7 @@ class _LoginPageState extends State<LoginPage> {
   final _senhaController = TextEditingController();
   bool _senhaVisivel = false;
   bool _carregando = false;
+  bool _carregandoGoogle = false;
 
   static const _gradienteVerde = LinearGradient(
     begin: Alignment.centerLeft,
@@ -33,27 +35,73 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+  void _irParaHome() {
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const MainLayout()),
+      (route) => false,
+    );
+  }
+
   Future<void> _entrar() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _carregando = true);
 
-    await Future.delayed(const Duration(seconds: 1));
+    try {
+      await AuthService.loginEmail(
+        _emailController.text,
+        _senhaController.text,
+      );
+      if (!mounted) return;
+      _irParaHome();
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AuthService.traduzirErro(e.code)),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _carregando = false);
+    }
+  }
 
-    setState(() => _carregando = false);
+  Future<void> _entrarComGoogle() async {
+    setState(() => _carregandoGoogle = true);
 
-    if (!mounted) return;
-
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const MainLayout()),
-    );
+    try {
+      final resultado = await AuthService.loginGoogle();
+      if (resultado == null) return;
+      if (!mounted) return;
+      _irParaHome();
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AuthService.traduzirErro(e.code)),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Erro ao entrar com Google. Tente novamente.'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _carregandoGoogle = false);
+    }
   }
 
   void _esqueceuSenha() {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const RecuperarSenhaPage()),
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Recuperação de senha em breve!')),
     );
   }
+
   void _cadastrar() {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const CadastroPage()),
@@ -75,27 +123,27 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   Image.asset(
                     'assets/images/greenhome_logo.png',
-                    height: 200, 
+                    height: 200,
                   ),
                   const SizedBox(height: 36),
 
+                  // Campo email 
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
                     decoration: _inputDecoration('E-mail', Icons.email_outlined),
                     validator: (v) {
-                      if (v == null || v.trim().isEmpty) {
-                        return 'Informe seu e-mail';
-                      }
-                      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(v.trim())) {
-                        return 'E-mail inválido';
+                      if (v == null || v.trim().isEmpty) return 'Informe seu e-mail';
+                      if (!v.trim().endsWith('@souunit.com.br')) {
+                        return 'Use seu e-mail institucional (@souunit.com.br)';
                       }
                       return null;
                     },
                   ),
                   const SizedBox(height: 14),
 
+                  // Campo senha 
                   TextFormField(
                     controller: _senhaController,
                     obscureText: !_senhaVisivel,
@@ -123,6 +171,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 6),
 
+                  // Esqueceu a senha
                   Align(
                     alignment: Alignment.centerLeft,
                     child: TextButton(
@@ -145,6 +194,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 32),
 
+                  // Botão Entrar 
                   SizedBox(
                     width: double.infinity,
                     height: 52,
@@ -190,8 +240,69 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 16),
+
+                  // Divisor 
+                  const Row(
+                    children: [
+                      Expanded(child: Divider(color: Colors.black26)),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 12),
+                        child: Text(
+                          'ou',
+                          style: TextStyle(color: Colors.black45, fontSize: 13),
+                        ),
+                      ),
+                      Expanded(child: Divider(color: Colors.black26)),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Botão Google
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: OutlinedButton(
+                      onPressed: _carregandoGoogle ? null : _entrarComGoogle,
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        side: const BorderSide(color: Color(0xFFDDE0DE)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      child: _carregandoGoogle
+                          ? const SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                color: Color(0xFF2A914D),
+                              ),
+                            )
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset(
+                                  'assets/images/google_logo.png',
+                                  height: 22,
+                                ),
+                                const SizedBox(width: 10),
+                                const Text(
+                                  'Entrar com Google',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
+                            ),
+                    ),
+                  ),
                   const SizedBox(height: 24),
 
+                  // Cadastrar 
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -235,8 +346,7 @@ class _LoginPageState extends State<LoginPage> {
       suffixIcon: suffixIcon,
       filled: true,
       fillColor: Colors.white,
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: Color(0xFFDDE0DE)),
