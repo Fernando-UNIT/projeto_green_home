@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../controllers/usuario_controller.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AlterarSenhaPage extends StatefulWidget {
   const AlterarSenhaPage({super.key});
@@ -56,32 +57,45 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
               width: double.infinity,
               height: 55,
               child: ElevatedButton(
-                onPressed: () async {  //aqui envia os dados para o controller realizar as validações e solicitar a alteração da senha no firebase
-                  String? resultado =
-                      await controller.alterarSenha(
-                    senhaAtual: senhaAtualController.text,
-                    novaSenha: novaSenhaController.text,
-                    confirmarSenha: confirmarSenhaController.text,
-                  );
+                onPressed: () async {
+                final user = FirebaseAuth.instance.currentUser;
+                final loginComGoogle = user?.providerData.any((provider) => provider.providerId == 'google.com',  //verifica se o login foi realizado com Google
+                    ) ??
+                    false;
 
-                  if (!context.mounted) return;
-
-                  if (resultado == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Senha alterada com sucesso!', ),
+                if (loginComGoogle) {         //bloqueia alteração de senha para contas Google
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Contas que entraram pelo Google devem alterar a senha diretamente na conta Google.',
                       ),
-                    );
-                    senhaAtualController.clear();
-                    novaSenhaController.clear();
-                    confirmarSenhaController.clear();
+                    ),
+                  );
+                  return;
+                }
+                String? resultado = await controller.alterarSenha(     //envia os dados para o controller realizar as validações
+                  senhaAtual: senhaAtualController.text,
+                  novaSenha: novaSenhaController.text,
+                  confirmarSenha: confirmarSenhaController.text,
+                );
 
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar( content: Text(resultado), ),
-                    );
-                  }
-                },
+                if (!context.mounted) return;
+
+                if (resultado == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Senha alterada com sucesso!',),
+                    ),
+                  );
+                  senhaAtualController.clear();
+                  novaSenhaController.clear();
+                  confirmarSenhaController.clear();
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(resultado),),
+                  );
+                }
+              },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF34A853),
                   foregroundColor: Colors.white,
