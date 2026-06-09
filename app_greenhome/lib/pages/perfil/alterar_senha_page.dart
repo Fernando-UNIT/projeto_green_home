@@ -66,9 +66,7 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                 if (loginComGoogle) {         //bloqueia alteração de senha para contas Google
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text(
-                        'Contas que entraram pelo Google devem alterar a senha diretamente na conta Google.',
-                      ),
+                      content: Text('Contas que entraram pelo Google devem alterar a senha diretamente na conta Google.',),
                     ),
                   );
                   return;
