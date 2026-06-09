@@ -3,20 +3,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/pratica.dart';
 
 class PraticasService {
-  // Retorna o UID do usuário logado
+
   String get uid {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) throw Exception('Usuário não logado');
     return user.uid;
   }
 
-  // Retorna o email do usuário logado
   String get email {
     final user = FirebaseAuth.instance.currentUser;
     return user?.email ?? '';
   }
 
-  // Criar prática
   Future<void> criarPratica(Pratica p) async {
     await FirebaseFirestore.instance
         .collection('users/$uid/praticas')
@@ -34,7 +32,6 @@ class PraticasService {
     });
   }
 
-  // Atualizar prática
   Future<void> atualizarPratica(Pratica p) async {
     await FirebaseFirestore.instance
         .collection('users/$uid/praticas')
@@ -50,7 +47,6 @@ class PraticasService {
     });
   }
 
-  // Excluir prática
   Future<void> excluirPratica(Pratica p) async {
     await FirebaseFirestore.instance
         .collection('users/$uid/praticas')
@@ -58,7 +54,6 @@ class PraticasService {
         .delete();
   }
 
-  // Listar práticas em tempo real
   Stream<List<Pratica>> listarPraticas() {
     return FirebaseFirestore.instance
         .collection('users/$uid/praticas')
