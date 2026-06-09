@@ -1,20 +1,12 @@
 import 'package:flutter/material.dart';
 import '../../models/pratica.dart';
 import 'nova_pratica_page.dart';
+import '../../services/praticas_service.dart';
 
 class DetalhePraticaPage extends StatefulWidget {
   final Pratica pratica;
-  final VoidCallback onExcluir;
-  final VoidCallback onAlternarConclusao;
-  final Function(Pratica praticaAtualizada) onEditar;
 
-  const DetalhePraticaPage({
-    super.key,
-    required this.pratica,
-    required this.onExcluir,
-    required this.onAlternarConclusao,
-    required this.onEditar,
-  });
+  const DetalhePraticaPage({super.key, required this.pratica});
 
   @override
   State<DetalhePraticaPage> createState() => _DetalhePraticaPageState();
@@ -22,6 +14,7 @@ class DetalhePraticaPage extends StatefulWidget {
 
 class _DetalhePraticaPageState extends State<DetalhePraticaPage> {
   late Pratica pratica;
+  final praticasService = PraticasService();
 
   @override
   void initState() {
@@ -68,25 +61,22 @@ class _DetalhePraticaPageState extends State<DetalhePraticaPage> {
     );
 
     if (praticaAtualizada != null) {
-      widget.onEditar(praticaAtualizada);
-
+      await praticasService.atualizarPratica(praticaAtualizada);
       setState(() {
         pratica = praticaAtualizada;
       });
     }
   }
 
-  void excluirPratica() {
-    widget.onExcluir();
+  void excluirPratica() async {
+    await praticasService.excluirPratica(pratica);
     Navigator.pop(context);
   }
 
-  void alternarConclusao() {
-    widget.onAlternarConclusao();
-
-    setState(() {
-      pratica.concluida = !pratica.concluida;
-    });
+  void alternarConclusao() async {
+    pratica.concluida = !pratica.concluida;
+    await praticasService.atualizarPratica(pratica);
+    setState(() {});
   }
 
   @override
@@ -151,9 +141,7 @@ class _DetalhePraticaPageState extends State<DetalhePraticaPage> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 18),
-
               // Detalhes
               Container(
                 width: double.infinity,
@@ -178,9 +166,7 @@ class _DetalhePraticaPageState extends State<DetalhePraticaPage> {
                   ],
                 ),
               ),
-
               const SizedBox(height: 28),
-
               // Botões
               Row(
                 children: [
@@ -219,6 +205,23 @@ class _DetalhePraticaPageState extends State<DetalhePraticaPage> {
                   ),
                 ],
               ),
+              const SizedBox(height: 10),
+              // Botão editar prática
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  onPressed: editarPratica,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueAccent,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text(
+                    'Editar',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -227,6 +230,7 @@ class _DetalhePraticaPageState extends State<DetalhePraticaPage> {
   }
 }
 
+// Classe _LinhaDetalhe no nível do arquivo
 class _LinhaDetalhe extends StatelessWidget {
   final String titulo;
   final String valor;

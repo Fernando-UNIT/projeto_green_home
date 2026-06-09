@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../controllers/praticas_controller.dart';
 import '../../models/pratica.dart';
 import 'detalhe_pratica_page.dart';
 import 'nova_pratica_page.dart';
 import '../../widgets/pratica_card.dart';
+import '../../services/praticas_service.dart';
 
 class PraticasPage extends StatefulWidget {
   const PraticasPage({super.key});
@@ -13,21 +13,14 @@ class PraticasPage extends StatefulWidget {
 }
 
 class _PraticasPageState extends State<PraticasPage> {
-  final PraticasController controller = PraticasController();
+  final praticasService = PraticasService();
   final TextEditingController buscaController = TextEditingController();
-
   String busca = '';
 
-  List<Pratica> get praticasFiltradas {
-    final praticas = controller.listar();
-
-    if (busca.trim().isEmpty) return praticas;
-
-    return praticas.where((pratica) {
-      final textoBusca = busca.toLowerCase();
-      return pratica.nome.toLowerCase().contains(textoBusca) ||
-          pratica.categoria.toLowerCase().contains(textoBusca);
-    }).toList();
+  @override
+  void dispose() {
+    buscaController.dispose();
+    super.dispose();
   }
 
   Future<void> abrirNovaPratica() async {
@@ -39,9 +32,7 @@ class _PraticasPageState extends State<PraticasPage> {
     );
 
     if (novaPratica != null) {
-      setState(() {
-        controller.adicionar(novaPratica);
-      });
+      await praticasService.criarPratica(novaPratica);
     }
   }
 
@@ -50,39 +41,15 @@ class _PraticasPageState extends State<PraticasPage> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => DetalhePraticaPage(
-        pratica: pratica,
-        onExcluir: () {
-          setState(() {
-            controller.excluir(pratica.id);
-          });
-        },
-        onAlternarConclusao: () {
-          setState(() {
-            controller.alternarConclusao(pratica.id);
-          });
-        },
-        onEditar: (praticaAtualizada) {
-          setState(() {
-            controller.atualizar(praticaAtualizada);
-          });
-        },
-      ),
+      builder: (_) => DetalhePraticaPage(pratica: pratica),
     );
-
-    setState(() {});
-  }
-
-  @override
-  void dispose() {
-    buscaController.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
+        // Campo de busca
         Padding(
           padding: const EdgeInsets.all(16),
           child: TextField(
@@ -99,24 +66,46 @@ class _PraticasPageState extends State<PraticasPage> {
             },
           ),
         ),
-        Expanded(
-          child: ListView.builder(
-            itemCount: praticasFiltradas.length,
-            itemBuilder: (_, index) {
-              final pratica = praticasFiltradas[index];
 
-              return PraticaCard(
-                pratica: pratica,
-                onTap: () => abrirDetalhes(pratica),
-                onFavoritoTap: () {
-                  setState(() {
-                    controller.alternarFavorito(pratica.id);
-                  });
+        // Lista de práticas usando stream do Firestore
+        Expanded(
+          child: StreamBuilder<List<Pratica>>(
+            stream: praticasService.listarPraticas(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              final praticasData = snapshot.data ?? [];
+              final praticasFiltradas = praticasData.where((pratica) {
+                final textoBusca = busca.toLowerCase();
+                return pratica.nome.toLowerCase().contains(textoBusca) ||
+                    pratica.categoria.toLowerCase().contains(textoBusca);
+              }).toList();
+
+              if (praticasFiltradas.isEmpty) {
+                return const Center(child: Text('Nenhuma prática cadastrada'));
+              }
+
+              return ListView.builder(
+                itemCount: praticasFiltradas.length,
+                itemBuilder: (_, index) {
+                  final pratica = praticasFiltradas[index];
+                  return PraticaCard(
+                    pratica: pratica,
+                    onTap: () => abrirDetalhes(pratica),
+                    onFavoritoTap: () async {
+                      pratica.favorita = !pratica.favorita;
+                      await praticasService.atualizarPratica(pratica);
+                    },
+                  );
                 },
               );
             },
           ),
         ),
+
+        // Botão nova prática
         Padding(
           padding: const EdgeInsets.all(16),
           child: SizedBox(

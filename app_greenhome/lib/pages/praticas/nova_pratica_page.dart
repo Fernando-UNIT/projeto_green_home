@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/pratica.dart';
+import '../../services/praticas_service.dart';
 
 class NovaPraticaPage extends StatefulWidget {
   final Pratica? pratica;
@@ -17,6 +18,8 @@ class _NovaPraticaPageState extends State<NovaPraticaPage> {
   final tempoController = TextEditingController();
   final descricaoController = TextEditingController();
 
+  final praticasService = PraticasService();
+
   bool get editando => widget.pratica != null;
 
   @override
@@ -31,7 +34,7 @@ class _NovaPraticaPageState extends State<NovaPraticaPage> {
     }
   }
 
-  void salvar() {
+  void salvar() async {
     if (nomeController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Digite o nome da prática.')),
@@ -60,7 +63,13 @@ class _NovaPraticaPageState extends State<NovaPraticaPage> {
       favorita: widget.pratica?.favorita ?? false,
     );
 
-    Navigator.pop(context, pratica);
+    if (editando) {
+      await praticasService.atualizarPratica(pratica);
+    } else {
+      await praticasService.criarPratica(pratica);
+    }
+
+    Navigator.pop(context);
   }
 
   @override
@@ -87,7 +96,7 @@ class _NovaPraticaPageState extends State<NovaPraticaPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-             
+              // Handle visual
               Center(
                 child: Container(
                   width: 48,
@@ -99,8 +108,7 @@ class _NovaPraticaPageState extends State<NovaPraticaPage> {
                 ),
               ),
               const SizedBox(height: 18),
-
-              
+              // Título
               Row(
                 children: [
                   Expanded(
@@ -119,7 +127,6 @@ class _NovaPraticaPageState extends State<NovaPraticaPage> {
                 ],
               ),
               const SizedBox(height: 12),
-
               // Campos do formulário
               _CampoTexto(
                 label: 'Nome da Prática',
@@ -152,7 +159,6 @@ class _NovaPraticaPageState extends State<NovaPraticaPage> {
                 maxLines: 4,
               ),
               const SizedBox(height: 24),
-
               // Botão salvar
               SizedBox(
                 width: double.infinity,

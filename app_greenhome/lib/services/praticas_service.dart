@@ -3,8 +3,21 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/pratica.dart';
 
 class PraticasService {
+  // Retorna o UID do usuário logado
+  String get uid {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) throw Exception('Usuário não logado');
+    return user.uid;
+  }
+
+  // Retorna o email do usuário logado
+  String get email {
+    final user = FirebaseAuth.instance.currentUser;
+    return user?.email ?? '';
+  }
+
+  // Criar prática
   Future<void> criarPratica(Pratica p) async {
-    final uid = FirebaseAuth.instance.currentUser!.uid;
     await FirebaseFirestore.instance
         .collection('users/$uid/praticas')
         .doc(p.id)
@@ -16,13 +29,13 @@ class PraticasService {
       'tempo': p.tempo,
       'concluida': p.concluida,
       'favorita': p.favorita,
-      'criado_por': FirebaseAuth.instance.currentUser!.email,
+      'criado_por': email,
       'criado_em': FieldValue.serverTimestamp(),
     });
   }
 
+  // Atualizar prática
   Future<void> atualizarPratica(Pratica p) async {
-    final uid = FirebaseAuth.instance.currentUser!.uid;
     await FirebaseFirestore.instance
         .collection('users/$uid/praticas')
         .doc(p.id)
@@ -37,16 +50,16 @@ class PraticasService {
     });
   }
 
+  // Excluir prática
   Future<void> excluirPratica(Pratica p) async {
-    final uid = FirebaseAuth.instance.currentUser!.uid;
     await FirebaseFirestore.instance
         .collection('users/$uid/praticas')
         .doc(p.id)
         .delete();
   }
 
+  // Listar práticas em tempo real
   Stream<List<Pratica>> listarPraticas() {
-    final uid = FirebaseAuth.instance.currentUser!.uid;
     return FirebaseFirestore.instance
         .collection('users/$uid/praticas')
         .snapshots()
@@ -54,13 +67,13 @@ class PraticasService {
               final data = doc.data();
               return Pratica(
                 id: doc.id,
-                nome: data['nome'],
-                categoria: data['categoria'],
-                descricao: data['descricao'],
-                lembrete: data['lembrete'],
-                tempo: data['tempo'],
-                concluida: data['concluida'],
-                favorita: data['favorita'],
+                nome: data['nome'] ?? '',
+                categoria: data['categoria'] ?? '',
+                descricao: data['descricao'] ?? '',
+                lembrete: data['lembrete'] ?? '',
+                tempo: data['tempo'] ?? '',
+                concluida: data['concluida'] ?? false,
+                favorita: data['favorita'] ?? false,
               );
             }).toList());
   }
