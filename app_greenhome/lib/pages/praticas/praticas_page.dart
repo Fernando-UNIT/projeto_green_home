@@ -24,24 +24,12 @@ class _PraticasPageState extends State<PraticasPage> {
   }
 
   Future<void> abrirNovaPratica() async {
-    final novaPratica = await showModalBottomSheet<Pratica>(
+    await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => const NovaPraticaPage(),
     );
-
-    if (novaPratica != null) {
-      // Validação extra antes de salvar
-      if (novaPratica.tempo.isEmpty || int.tryParse(novaPratica.tempo) == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('O tempo deve ser um número válido')),
-        );
-        return;
-      }
-
-      await praticasService.criarPratica(novaPratica);
-    }
   }
 
   Future<void> abrirDetalhes(Pratica pratica) async {

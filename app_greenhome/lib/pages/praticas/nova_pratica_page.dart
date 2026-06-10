@@ -43,16 +43,36 @@ class _NovaPraticaPageState extends State<NovaPraticaPage> {
   void salvar() async {
     // Validação do nome
     if (nomeController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Digite o nome da prática.')),
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Erro'),
+          content: const Text('Digite o nome da prática.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
       );
       return;
     }
 
     // Validação do tempo
     if (tempoController.text.trim().isEmpty || int.tryParse(tempoController.text.trim()) == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Digite um tempo válido em números.')),
+            showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Erro'),
+          content: const Text('Digite um tempo válido em números.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
       );
       return;
     }
