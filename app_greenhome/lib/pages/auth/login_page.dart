@@ -1,3 +1,4 @@
+import 'recuperar_senha_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../layout/main_layout.dart';
@@ -97,15 +98,15 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _esqueceuSenha() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Recuperação de senha em breve!')),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const RecuperarSenhaPage()));
   }
 
   void _cadastrar() {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const CadastroPage()),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const CadastroPage()));
   }
 
   @override
@@ -121,20 +122,21 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset(
-                    'assets/images/greenhome_logo.png',
-                    height: 200,
-                  ),
+                  Image.asset('assets/images/greenhome_logo.png', height: 200),
                   const SizedBox(height: 36),
 
-                  // Campo email 
+                  // Campo email
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
-                    decoration: _inputDecoration('E-mail', Icons.email_outlined),
+                    decoration: _inputDecoration(
+                      'E-mail',
+                      Icons.email_outlined,
+                    ),
                     validator: (v) {
-                      if (v == null || v.trim().isEmpty) return 'Informe seu e-mail';
+                      if (v == null || v.trim().isEmpty)
+                        return 'Informe seu e-mail';
                       if (!v.trim().endsWith('@souunit.com.br')) {
                         return 'Use seu e-mail institucional (@souunit.com.br)';
                       }
@@ -143,7 +145,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 14),
 
-                  // Campo senha 
+                  // Campo senha
                   TextFormField(
                     controller: _senhaController,
                     obscureText: !_senhaVisivel,
@@ -194,7 +196,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 32),
 
-                  // Botão Entrar 
+                  // Botão Entrar
                   SizedBox(
                     width: double.infinity,
                     height: 52,
@@ -204,7 +206,9 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(30),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF46C971).withValues(alpha: 0.35),
+                            color: const Color(
+                              0xFF46C971,
+                            ).withValues(alpha: 0.35),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),
@@ -242,7 +246,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Divisor 
+                  // Divisor
                   const Row(
                     children: [
                       Expanded(child: Divider(color: Colors.black26)),
@@ -302,7 +306,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 24),
 
-                  // Cadastrar 
+                  // Cadastrar
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
