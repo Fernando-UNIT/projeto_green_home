@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/pratica.dart';
 import '../../services/praticas_service.dart';
+import 'package:flutter/services.dart';
 
 class NovaPraticaPage extends StatefulWidget {
   final Pratica? pratica;
@@ -22,6 +23,10 @@ class _NovaPraticaPageState extends State<NovaPraticaPage> {
 
   bool get editando => widget.pratica != null;
 
+  // Unidade do tempo
+  String unidadeSelecionada = 'minutos';
+  final List<String> unidades = ['minutos', 'horas'];
+
   @override
   void initState() {
     super.initState();
@@ -29,18 +34,30 @@ class _NovaPraticaPageState extends State<NovaPraticaPage> {
       nomeController.text = widget.pratica!.nome;
       categoriaController.text = widget.pratica!.categoria;
       lembreteController.text = widget.pratica!.lembrete;
-      tempoController.text = widget.pratica!.tempo;
+      tempoController.text = widget.pratica!.tempo.split(' ').first; // separa número
+      unidadeSelecionada = widget.pratica!.tempo.contains('hora') ? 'horas' : 'minutos';
       descricaoController.text = widget.pratica!.descricao;
     }
   }
 
   void salvar() async {
+    // Validação do nome
     if (nomeController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Digite o nome da prática.')),
       );
       return;
     }
+
+    // Validação do tempo
+    if (tempoController.text.trim().isEmpty || int.tryParse(tempoController.text.trim()) == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Digite um tempo válido em números.')),
+      );
+      return;
+    }
+
+    final tempoFinal = '${tempoController.text.trim()} $unidadeSelecionada';
 
     final pratica = Pratica(
       id: editando
@@ -56,9 +73,7 @@ class _NovaPraticaPageState extends State<NovaPraticaPage> {
       lembrete: lembreteController.text.trim().isEmpty
           ? 'Sem lembrete'
           : lembreteController.text.trim(),
-      tempo: tempoController.text.trim().isEmpty
-          ? 'Não informado'
-          : tempoController.text.trim(),
+      tempo: tempoFinal,
       concluida: widget.pratica?.concluida ?? false,
       favorita: widget.pratica?.favorita ?? false,
     );
@@ -146,10 +161,39 @@ class _NovaPraticaPageState extends State<NovaPraticaPage> {
                 controller: lembreteController,
               ),
               const SizedBox(height: 14),
-              _CampoTexto(
-                label: 'Tempo',
-                hint: 'Ex: 10 min',
-                controller: tempoController,
+              // Campo de tempo com dropdown de unidade
+              Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: _CampoTexto(
+                      label: 'Tempo',
+                      hint: 'Ex: 30',
+                      controller: tempoController,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    flex: 1,
+                    child: DropdownButtonFormField<String>(
+                      value: unidadeSelecionada,
+                      items: unidades
+                          .map((u) => DropdownMenuItem(value: u, child: Text(u)))
+                          .toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          unidadeSelecionada = value!;
+                        });
+                      },
+                      decoration: const InputDecoration(
+                        labelText: 'Unidade',
+                        border: OutlineInputBorder(),
+                        filled: true,
+                        fillColor: Color(0xFFF3F3F3),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 14),
               _CampoTexto(

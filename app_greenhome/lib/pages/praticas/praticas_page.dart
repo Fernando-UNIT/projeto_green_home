@@ -32,6 +32,14 @@ class _PraticasPageState extends State<PraticasPage> {
     );
 
     if (novaPratica != null) {
+      // Validação extra antes de salvar
+      if (novaPratica.tempo.isEmpty || int.tryParse(novaPratica.tempo) == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('O tempo deve ser um número válido')),
+        );
+        return;
+      }
+
       await praticasService.criarPratica(novaPratica);
     }
   }
