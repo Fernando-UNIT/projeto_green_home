@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+// Tela descontinuada —
+
 class NovaSenhaPage extends StatelessWidget {
   const NovaSenhaPage({super.key});
 

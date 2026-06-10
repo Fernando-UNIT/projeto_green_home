@@ -11,7 +11,11 @@ class RecuperarSenhaPage extends StatefulWidget {
 class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
+
+  // Controla o indicador de carregamento no botão
   bool _carregando = false;
+
+  // Controla qual tela exibir: formulário ou confirmação
   bool _enviado = false;
 
   static const _gradienteVerde = LinearGradient(
@@ -22,6 +26,8 @@ class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
   );
 
   static const _corVerde = Color(0xFF42A80B);
+
+  // Domínio aceito — qualquer outro e-mail é bloqueado na validação
   static const _dominioPermitido = '@souunit.com.br';
 
   @override
@@ -36,12 +42,17 @@ class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
     setState(() => _carregando = true);
 
     try {
+      // Define o idioma do Firebase para português
+      // Afeta tanto o e-mail recebido quanto a tela de redefinição
       await FirebaseAuth.instance.setLanguageCode('pt-BR');
+
+      // Envia o link de redefinição para o e-mail informado
       await FirebaseAuth.instance.sendPasswordResetEmail(
         email: _emailController.text.trim(),
       );
 
       if (!mounted) return;
+
       setState(() {
         _carregando = false;
         _enviado = true;
@@ -69,6 +80,7 @@ class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF2F4F3),
+
       appBar: _enviado
           ? null
           : AppBar(
@@ -87,6 +99,7 @@ class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
+            // Alterna entre formulário e tela de confirmação
             child: _enviado ? _buildConfirmacao() : _buildFormulario(),
           ),
         ),
@@ -123,6 +136,7 @@ class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
           ),
         ),
         const SizedBox(height: 10),
+
         Text(
           'Se existe uma conta cadastrada com\n${_emailController.text.trim()}\nvocê receberá um link para redefinir sua senha.\n\nVerifique também a pasta de spam.',
           textAlign: TextAlign.center,
@@ -214,6 +228,7 @@ class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.done,
+
             onFieldSubmitted: (_) => _enviarEmail(),
             decoration: _inputDecoration('E-mail', Icons.email_outlined),
             validator: (v) {
@@ -223,6 +238,7 @@ class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
               if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(v.trim())) {
                 return 'E-mail inválido';
               }
+              // Bloqueia qualquer e-mail fora do domínio institucional
               if (!v.trim().endsWith(_dominioPermitido)) {
                 return 'Use seu e-mail institucional (@souunit.com.br)';
               }
@@ -254,6 +270,7 @@ class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
+
                 child: _carregando
                     ? const SizedBox(
                         width: 22,
