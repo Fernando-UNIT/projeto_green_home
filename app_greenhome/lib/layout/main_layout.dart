@@ -5,6 +5,8 @@ import '../pages/perfil/alterar_senha_page.dart';
 import '../pages/metas/metas_page.dart';
 import '../pages/praticas/praticas_page.dart';
 import '../pages/home/home_page.dart';
+import '../models/pratica.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
@@ -17,6 +19,7 @@ class _MainLayoutState extends State<MainLayout> {
   int paginaAtual = 0;
   bool mostrandoPerfil = false;
   bool mostrandoAlterarSenha = false;
+  Pratica? praticaParaAbrir;
 
   void abrirAlterarSenha() {
     setState(() {
@@ -32,7 +35,7 @@ class _MainLayoutState extends State<MainLayout> {
     });
   }
 
-  final List<String> titulos = ['Olá, Carlos', 'Práticas', 'Metas', 'Dicas'];
+  final List<String> titulos = ['Início', 'Práticas', 'Metas', 'Dicas'];
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +44,11 @@ class _MainLayoutState extends State<MainLayout> {
         onTapPraticas: () {
           setState(() {
             paginaAtual = 1;
+          });
+        },
+        onTapMetas: () {
+          setState(() {
+            paginaAtual = 2;
           });
         },
       ),
@@ -65,6 +73,8 @@ class _MainLayoutState extends State<MainLayout> {
               ? 'Alterar senha'
               : mostrandoPerfil
               ? 'Perfil'
+              : paginaAtual == 0
+              ? 'Olá, ${FirebaseAuth.instance.currentUser?.displayName?.split(' ')[0] ?? 'Usuário'}'
               : titulos[paginaAtual],
           style: const TextStyle(
             fontSize: 28,
